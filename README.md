@@ -6,3 +6,8 @@ E dar os devidos acessos para que funcione corretamento o programa
 
 # Para iniciar, digite no terminal: python bot.py
 
+Antes, baixe o necessário:
+- curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+- pip install PyAutoGUI
+- pip install pillow
+- pip install opencv-python
