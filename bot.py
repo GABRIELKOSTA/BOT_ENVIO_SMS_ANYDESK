@@ -4,6 +4,7 @@ import pyautogui
 import time
 import pyperclip
 import random
+import os
 
 pyautogui.FAILSAFE = True
 
@@ -14,8 +15,10 @@ pyautogui.FAILSAFE = True
 
 def encontrar(img):
     try:
+        if not os.path.exists(img):
+            return None
         return pyautogui.locateCenterOnScreen(img, confidence=0.75)
-    except pyautogui.ImageNotFoundException:
+    except:
         return None
 
 
@@ -27,13 +30,16 @@ def procurar_varios(imgs, tempo=5):
 
         for img in imgs:
 
+            if not os.path.exists(img):
+                continue
+
             try:
                 pos = pyautogui.locateCenterOnScreen(img, confidence=0.75)
 
                 if pos:
                     return img, pos
 
-            except pyautogui.ImageNotFoundException:
+            except:
                 pass
 
         time.sleep(0.5)
@@ -54,6 +60,26 @@ def clicar_varios(imgs, tempo=5):
 
 
 # -----------------------------
+# NOVA FUNÇÃO → FECHAR TECLADO
+# -----------------------------
+
+def fechar_teclado_se_aberto():
+
+    img, pos = procurar_varios([
+        "imagens/abriu_teclado.png"
+    ], 2)
+
+    if pos:
+        print("Teclado aberto detectado → fechando")
+
+        clicar_varios([
+            "imagens/fechar_teclado.png"
+        ])
+
+        time.sleep(1)
+
+
+# -----------------------------
 # Carregar dados
 # -----------------------------
 
@@ -61,12 +87,10 @@ with open("numeros.txt", "r", encoding="utf-8") as f:
     numeros = [n.strip() for n in f]
 
 
-# mensagens RCS
 with open("mensagem.txt", "r", encoding="utf-8") as f:
     mensagens_rcs = f.read().split("\n---\n")
 
 
-# mensagens SMS
 with open("mensagem2.txt", "r", encoding="utf-8") as f:
     mensagens_sms = f.read().split("\n---\n")
 
@@ -113,6 +137,10 @@ for numero in numeros:
         time.sleep(2)
 
 
+        # 🔥 FECHA TECLADO SE ESTIVER ABERTO
+        fechar_teclado_se_aberto()
+
+
         # detectar tipo de chat
         img_detectada, pos = procurar_varios([
             "imagens/selecionar_mensagem.png",
@@ -138,7 +166,7 @@ for numero in numeros:
 
         # escolher mensagem baseada no tipo
 
-        if "selecionar_mensagem2" in img_detectada:
+        if img_detectada == "imagens/selecionar_mensagem2.png":
 
             mensagem = random.choice(mensagens_sms)
             print("Tipo detectado: SMS")
